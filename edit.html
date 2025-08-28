@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<link href="SK.png" rel="shortcut icon" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stupikid - 管理員模式</title>
+<link rel="stylesheet" href="edit-style.css?version=1.1">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="manifest" href="/stupikid/manifest.json">
+<meta name="theme-color" content="#212121">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+<!-- 密碼保護遮罩 -->
+<div class="password-overlay" id="passwordOverlay" style="display: none;">
+    <div class="password-container">
+        <i class="fas fa-shield-alt lock-icon"></i>
+        <h1 class="password-title">🔐 管理員驗證</h1>
+        <p class="password-subtitle">請輸入管理員密碼 (提示:高齊生日)</p>
+        <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼" autocomplete="off">
+        <button class="password-btn" id="passwordBtn">
+            <i class="fas fa-key"></i> 進入管理模式
+        </button>
+        <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
+    </div>
+</div>
+
+<!-- 主要內容 -->
+<div class="main-content" id="mainContent">
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-play-circle"></i> Stupikid
+            </a>
+            <div class="admin-badge">
+                <i class="fas fa-crown"></i>
+                管理員模式
+            </div>
+            <button class="exit-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> 登出
+            </button>
+        </div>
+    </header>
+
+    <main class="admin-container">
+        <!-- 新增影片區域 -->
+        <section class="add-video-section">
+            <div class="section-header">
+                <h2><i class="fas fa-plus-circle"></i> 新增影片</h2>
+            </div>
+            
+            <form id="addVideoForm" class="video-form">
+                <!-- 影片來源選擇 -->
+                <div class="form-group">
+                    <label class="form-label">影片來源</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="videoSource" value="vimeo" checked>
+                            <span class="radio-custom"></span>
+                            <i class="fab fa-vimeo"></i> Vimeo
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="videoSource" value="youtube">
+                            <span class="radio-custom"></span>
+                            <i class="fab fa-youtube"></i> YouTube
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 影片網址/ID -->
+                <div class="form-group">
+                    <label for="videoUrl" class="form-label">Vimeo 影片 ID</label>
+                    <input type="text" id="videoUrl" name="videoUrl" class="form-input" 
+                           placeholder="例如：1113840188" required>
+                </div>
+
+                <!-- 影片標題 -->
+                <div class="form-group">
+                    <label for="videoTitle" class="form-label">影片標題</label>
+                    <input type="text" id="videoTitle" name="videoTitle" class="form-input" 
+                           placeholder="輸入影片標題" required>
+                </div>
+
+                <!-- 標籤 -->
+                <div class="form-group">
+                    <label for="videoTags" class="form-label">標籤 (用逗號分隔)</label>
+                    <input type="text" id="videoTags" name="videoTags" class="form-input" 
+                           placeholder="例如：做愛,性愛,教學">
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-plus"></i> 新增影片
+                </button>
+            </form>
+        </section>
+
+        <!-- 影片列表區域 -->
+        <section class="video-list-section">
+            <div class="section-header">
+                <h2><i class="fas fa-video"></i> 影片管理</h2>
+                <div class="video-count">
+                    共 <span id="videoCount">0</span> 部影片
+                </div>
+            </div>
+            
+            <div id="videoList" class="video-list">
+                <!-- 影片列表將動態載入 -->
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- 編輯影片彈窗 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> 編輯影片</h3>
+            <button class="close-btn" onclick="closeModal('editModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form id="editVideoForm" class="video-form">
+            <div class="form-group">
+                <label for="editVideoTitle" class="form-label">影片標題</label>
+                <input type="text" id="editVideoTitle" name="editVideoTitle" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editVideoUrl" class="form-label">影片網址</label>
+                <input type="url" id="editVideoUrl" name="editVideoUrl" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editVideoTags" class="form-label">標籤 (用逗號分隔)</label>
+                <input type="text" id="editVideoTags" name="editVideoTags" class="form-input">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="cancelEdit" class="btn-secondary">
+                    <i class="fas fa-times"></i> 取消
+                </button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> 儲存變更
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 刪除確認彈窗 -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> 確認刪除</h3>
+        </div>
+        
+        <div class="modal-body">
+            <p>確定要刪除影片「<span id="deleteVideoTitle"></span>」嗎？</p>
+            <p class="warning-text">此操作無法復原！</p>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" id="cancelDelete" class="btn-secondary">
+                <i class="fas fa-times"></i> 取消
+            </button>
+            <button type="button" id="confirmDelete" class="btn-danger">
+                <i class="fas fa-trash"></i> 確認刪除
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="edit-script.js?version=1.1"></script>
+</body>
+</html>

@@ -23,72 +23,72 @@
 </head>
 
 <body>
-    <!-- 密碼保護遮罩 -->
-    <div class="password-overlay" id="passwordOverlay">
-        <div class="password-container">
-            <i class="fas fa-lock lock-icon"></i>
-            <h1 class="password-title">🔒 內容受保護</h1>
-            <p class="password-subtitle">請輸入密碼 (提示:高齊生日)</p>
-            <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼" autocomplete="off">
-            <button class="password-btn" id="passwordBtn">
-                <i class="fas fa-key"></i> 解鎖
-            </button>
-            <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
-        </div>
-    </div>
+  <!-- 密碼保護遮罩 -->
+  <div class="password-overlay" id="passwordOverlay" style="display: none;">
+      <div class="password-container">
+          <i class="fas fa-lock lock-icon"></i>
+          <h1 class="password-title">🔒 內容受保護</h1>
+          <p class="password-subtitle">請輸入密碼 (提示:高齊生日)</p>
+          <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼" autocomplete="off">
+          <button class="password-btn" id="passwordBtn">
+              <i class="fas fa-key"></i> 解鎖
+          </button>
+          <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
+      </div>
+  </div>
 
-    <!-- 主要內容 - 初始隱藏 -->
-    <div class="main-content" id="mainContent">
-        <header class="header">
-            <div class="nav-container">
-                <a href="index.html" class="logo">
-                    <i class="fas fa-play-circle"></i> Stupikid
-                </a>
-                <div class="search-box">
-                    <input type="text" class="search-input" placeholder="搜尋影片..." id="searchInput">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-            </div>
-        </header>
+  <!-- 主要內容 - 初始隱藏 -->
+  <div class="main-content" id="mainContent">
+      <header class="header">
+          <div class="nav-container">
+              <a href="index.html" class="logo">
+                  <i class="fas fa-play-circle"></i> Stupikid
+              </a>
+              <!-- 🔧 修改：為搜尋框容器添加 search-container class -->
+              <div class="search-box search-container">
+                  <input type="text" class="search-input" placeholder="搜尋影片..." id="searchInput">
+                  <i class="fas fa-search search-icon"></i>
+                  <!-- 管理員按鈕會由 JavaScript 動態插入到這裡 -->
+              </div>
+          </div>
+      </header>
 
-        <main class="main-container">
-            <section id="recommendedSection">
-                <h2 class="section-title">
-                    <span>
-                        <i class="fas fa-fire"></i> 推薦影片
-                    </span>
-                    <button class="view-all-btn" id="viewAllBtn">
-                        <i class="fas fa-th"></i> 查看全部 
-                    </button>
-                </h2>
-                <div class="video-grid" id="recommendedGrid"></div>
-            </section>
+      <main class="main-container">
+          <section id="recommendedSection">
+              <h2 class="section-title">
+                  <span>
+                      <i class="fas fa-fire"></i> 推薦影片
+                  </span>
+                  <button class="view-all-btn" id="viewAllBtn">
+                      <i class="fas fa-th"></i> 查看全部 
+                  </button>
+              </h2>
+              <div class="video-grid" id="recommendedGrid"></div>
+          </section>
 
-            <section id="allVideosSection" class="hidden">
-                <h2 class="section-title">
-                    <span id="allVideoTitle">
-                        <i class="fas fa-video"></i> 所有影片 
-                    </span>
-                    <button class="view-all-btn back-btn" id="backBtn">
-                        <i class="fas fa-arrow-left"></i> 返回推薦
-                    </button>
-                </h2>
-                <div class="stats-info" id="statsInfo">
-                    顯示全部影片
-                </div>
-                <div class="video-grid" id="videoGrid"></div>
-            </section>
+          <section id="allVideosSection" class="hidden">
+              <h2 class="section-title">
+                  <span id="allVideoTitle">
+                      <i class="fas fa-video"></i> 所有影片 
+                  </span>
+                  <button class="view-all-btn back-btn" id="backBtn">
+                      <i class="fas fa-arrow-left"></i> 返回推薦
+                  </button>
+              </h2>
+              <div class="stats-info" id="statsInfo">
+                  顯示全部影片
+              </div>
+              <div class="video-grid" id="videoGrid"></div>
+          </section>
 
-            <div class="no-results hidden" id="noResults">
-                <i class="fas fa-search"></i>
-                <h3>找不到相關影片</h3>
-                <p>請嘗試其他關鍵字</p>
-            </div>
-        </main>
-    </div>
+          <div class="no-results hidden" id="noResults">
+              <i class="fas fa-search"></i>
+              <h3>找不到相關影片</h3>
+              <p>請嘗試其他關鍵字</p>
+          </div>
+      </main>
+  </div>
 
-
-    
-    <script src="script.js?version=2.0"></script>    
+  <script type="module" src="script.js?version=2.0"></script>    
 </body>
 </html>
