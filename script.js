@@ -172,9 +172,42 @@
 
         // 播放影片
         function playVideo(video) {
-            // 在新視窗開啟影片
-            window.open(video.src, '_blank');
+            // 創建模態框
+            const modal = document.createElement('div');
+            modal.className = 'video-modal';
+            modal.innerHTML = `
+                <div class="video-modal-content">
+                    <div class="video-modal-header">
+                        <h3>${video.title}</h3>
+                        <button class="close-modal" onclick="closeVideoModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="video-modal-body">
+                        <iframe src="${video.src}&autoplay=1" 
+                                width="100%" 
+                                height="100%" 
+                                frameborder="0" 
+                                allow="autoplay; fullscreen; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
         }
+
+        // 關閉影片模態框
+        function closeVideoModal() {
+            const modal = document.querySelector('.video-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
+
 
         // 設置按鈕功能
         function setupButtons() {
