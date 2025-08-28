@@ -549,3 +549,80 @@ input, textarea {
     -ms-user-select: text;
     user-select: text;
 }
+
+
+/* 管理員模式按鈕樣式 */
+.admin-mode-btn {
+  position: absolute;
+  top: 50%;
+  right: 60px;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%) scale(0.8);
+}
+
+.admin-mode-btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) scale(1);
+}
+
+.admin-mode-btn:hover {
+  background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.admin-mode-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.admin-mode-btn i {
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+/* 脈衝動畫 */
+@keyframes pulse {
+  0% {
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  }
+  50% {
+      box-shadow: 0 4px 25px rgba(255, 107, 107, 0.6);
+      transform: translateY(-50%) scale(1.02);
+  }
+  100% {
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  }
+}
+
+/* 確保搜尋容器有相對定位 */
+.search-container {
+  position: relative;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .admin-mode-btn {
+      right: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+  }
+  
+  .admin-mode-btn i {
+      margin-right: 4px;
+      font-size: 11px;
+  }
+}
