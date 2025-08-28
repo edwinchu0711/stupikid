@@ -5,8 +5,8 @@
   "start_url": "/stupikid/",
   "scope": "/stupikid/",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#000000",
+  "background_color": "#212121",
+  "theme_color": "#212121",
   "icons": [
     {
       "src": "SK.png",
