@@ -1,0 +1,14 @@
+{
+"messages": [
+  {
+    "id": 1,
+    "name": "系統管理員",
+    "email": "admin@example.com",
+    "message": "歡迎使用 GitHub 留言板！這是第一則示範留言。",
+    "timestamp": "2025-08-28T12:00:00.000Z",
+    "ip": "127.0.0.1",
+    "approved": true
+  }
+],
+"lastId": 1
+}
