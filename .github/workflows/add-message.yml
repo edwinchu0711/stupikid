@@ -1,0 +1,107 @@
+name: Add New Message
+
+# 觸發條件：當有新的 Issue 被建立時
+on:
+issues:
+  types: [opened]
+
+jobs:
+add-message:
+  runs-on: ubuntu-latest
+  
+  # 只處理帶有特定標籤的 Issue
+  if: contains(github.event.issue.labels.*.name, 'guestbook-message')
+  
+  steps:
+  - name: Checkout repository
+    uses: actions/checkout@v3
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  
+  - name: Setup Node.js
+    uses: actions/setup-node@v3
+    with:
+      node-version: '18'
+  
+  - name: Parse issue and add message
+    run: |
+      # 安裝 jq 來處理 JSON
+      sudo apt-get update
+      sudo apt-get install -y jq
+      
+      # 從 Issue 內容中提取資訊
+      ISSUE_BODY="${{ github.event.issue.body }}"
+      ISSUE_TITLE="${{ github.event.issue.title }}"
+      ISSUE_USER="${{ github.event.issue.user.login }}"
+      ISSUE_DATE="${{ github.event.issue.created_at }}"
+      
+      # 解析 Issue 內容 (假設使用特定格式)
+      NAME=$(echo "$ISSUE_BODY" | grep "姓名:" | sed 's/姓名://g' | xargs)
+      EMAIL=$(echo "$ISSUE_BODY" | grep "Email:" | sed 's/Email://g' | xargs)
+      MESSAGE=$(echo "$ISSUE_BODY" | grep -A 999 "留言內容:" | tail -n +2)
+      
+      # 如果沒有提供姓名，使用 GitHub 用戶名
+      if [ -z "$NAME" ]; then
+        NAME="$ISSUE_USER"
+      fi
+      
+      # 讀取現有的留言資料
+      MESSAGES_FILE="data/messages.json"
+      
+      # 獲取下一個 ID
+      LAST_ID=$(jq '.lastId' $MESSAGES_FILE)
+      NEW_ID=$((LAST_ID + 1))
+      
+      # 建立新留言物件
+      NEW_MESSAGE=$(jq -n \
+        --arg id "$NEW_ID" \
+        --arg name "$NAME" \
+        --arg email "$EMAIL" \
+        --arg message "$MESSAGE" \
+        --arg timestamp "$ISSUE_DATE" \
+        --arg github_user "$ISSUE_USER" \
+        --arg issue_number "${{ github.event.issue.number }}" \
+        '{
+          id: ($id | tonumber),
+          name: $name,
+          email: $email,
+          message: $message,
+          timestamp: $timestamp,
+          github_user: $github_user,
+          issue_number: ($issue_number | tonumber),
+          approved: true
+        }')
+      
+      # 將新留言添加到 JSON 檔案
+      jq --argjson new_message "$NEW_MESSAGE" \
+         --arg new_id "$NEW_ID" \
+         '.messages += [$new_message] | .lastId = ($new_id | tonumber)' \
+         $MESSAGES_FILE > temp.json && mv temp.json $MESSAGES_FILE
+      
+      echo "已添加新留言: $NAME"
+  
+  - name: Commit and push changes
+    run: |
+      git config --local user.email "action@github.com"
+      git config --local user.name "GitHub Action"
+      git add data/messages.json
+      git commit -m "Add new message from ${{ github.event.issue.user.login }}" || exit 0
+      git push
+  
+  - name: Close issue with thank you message
+    uses: actions/github-script@v6
+    with:
+      script: |
+        github.rest.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: '🎉 感謝你的留言！你的留言已經成功添加到留言板中。\n\n你可以在 [留言板頁面](https://你的用戶名.github.io/你的倉庫名/) 查看你的留言。'
+        });
+        
+        github.rest.issues.update({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          state: 'closed'
+        });
