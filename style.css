@@ -521,3 +521,31 @@
 .video-modal-content {
     cursor: default;
 }
+
+/* 禁用文字和圖片選取 */
+* {
+    -webkit-user-select: none;  /* Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* Internet Explorer/Edge */
+    user-select: none;          /* 標準語法 */
+    -webkit-touch-callout: none; /* iOS Safari 禁用長按選單 */
+    -webkit-tap-highlight-color: transparent; /* 移除點擊高亮 */
+}
+
+/* 禁用圖片拖拽 */
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none; /* 完全禁用圖片互動 */
+}
+
+/* 如果需要保留某些元素的選取功能，可以單獨設定 */
+input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
