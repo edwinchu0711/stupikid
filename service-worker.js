@@ -1,7 +1,6 @@
 const CACHE_NAME = 'stupikid-v1';
 const urlsToCache = [
   '/stupikid/',
-  '/stupikid/index.html',
   '/stupikid/script.js',
   '/stupikid/1534128869.ico'
 ];
