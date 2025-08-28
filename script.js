@@ -267,28 +267,234 @@
             }
         }, 600000);
                 // 等待Vimeo iframe加載完成後應用CSS
-        function hideVimeoUserInfo() {
-            // 嘗試獲取Vimeo iframe
-            const vimeoIframes = document.querySelectorAll('iframe[src*="vimeo.com"]');
-            
-            vimeoIframes.forEach(iframe => {
-                iframe.addEventListener('load', function() {
-                    // 嘗試訪問iframe內容（可能受同源政策限制）
-                    try {
-                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                        const style = iframeDoc.createElement('style');
-                        style.textContent = `
-                            a[class*="Title_module_subtitle"] {
-                                display: none !important;
-                            }
-                        `;
-                        iframeDoc.head.appendChild(style);
-                    } catch (e) {
-                        console.log('無法直接訪問iframe內容，可能受同源政策限制');
+
+
+        // 加強安全性的密碼保護功能
+        class SecurePasswordProtection {
+            constructor() {
+                this.correctPassword = '0227'; // 設定您的密碼
+                this.sessionKey = 'stupikid_authenticated';
+
+                this.sessionDuration = 30 * 60 * 1000; // 30分鐘
+                this.isUnlocked = false;
+                
+                this.init();
+                this.setupSecurityMeasures();
+            }
+
+            init() {
+                // 檢查是否已經認證過
+                // 檢查是否已經認證過
+                if (this.isAuthenticated()) {
+                    setTimeout(() => {
+                        this.unlockContent();
+                    }, 100);
+                } else {
+                    this.showPasswordOverlay();
+                }
+
+
+                this.bindEvents();
+            }
+
+            setupSecurityMeasures() {
+                // 禁用右鍵菜單
+                document.addEventListener('contextmenu', (e) => {
+                    if (!this.isUnlocked) {
+                        e.preventDefault();
+                        return false;
                     }
                 });
-            });
+
+                // 禁用F12、Ctrl+Shift+I等開發者工具快捷鍵
+                document.addEventListener('keydown', (e) => {
+                    if (!this.isUnlocked) {
+                        // F12
+                        if (e.key === 'F12') {
+                            e.preventDefault();
+                            return false;
+                        }
+                        // Ctrl+Shift+I
+                        if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                            e.preventDefault();
+                            return false;
+                        }
+                        // Ctrl+Shift+J
+                        if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                            e.preventDefault();
+                            return false;
+                        }
+                        // Ctrl+U
+                        if (e.ctrlKey && e.key === 'u') {
+                            e.preventDefault();
+                            return false;
+                        }
+                        // Ctrl+Shift+C
+                        if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                });
+
+                // 檢測開發者工具
+                let devtools = {
+                    open: false,
+                    orientation: null
+                };
+
+                const threshold = 160;
+
+                setInterval(() => {
+                    if (!this.isUnlocked) {
+                        if (window.outerHeight - window.innerHeight > threshold || 
+                            window.outerWidth - window.innerWidth > threshold) {
+                            if (!devtools.open) {
+                                devtools.open = true;
+                                this.handleDevToolsDetected();
+                            }
+                        } else {
+                            devtools.open = false;
+                        }
+                    }
+                }, 500);
+
+                // 防止通過console操作
+                if (!this.isUnlocked) {
+                    Object.defineProperty(window, 'console', {
+                        value: console,
+                        writable: false,
+                        configurable: false
+                    });
+                }
+            }
+
+            handleDevToolsDetected() {
+                // 重新載入頁面或其他安全措施
+                document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;z-index:999999;">⚠️ 檢測到非法操作</div>';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+
+            bindEvents() {
+                const passwordInput = document.getElementById('passwordInput');
+                const passwordBtn = document.getElementById('passwordBtn');
+                const passwordError = document.getElementById('passwordError');
+
+                // 按鈕點擊事件
+                passwordBtn.addEventListener('click', () => {
+                    this.checkPassword();
+                });
+
+                // Enter鍵事件
+                passwordInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.checkPassword();
+                    }
+                });
+
+                // 清除錯誤信息
+                passwordInput.addEventListener('input', () => {
+                    passwordError.classList.remove('show');
+                });
+            }
+
+            checkPassword() {
+                const passwordInput = document.getElementById('passwordInput');
+                const passwordError = document.getElementById('passwordError');
+                const inputPassword = passwordInput.value.trim();
+
+                if (inputPassword === this.correctPassword) {
+                    // 密碼正確
+                    this.setAuthentication();
+                    this.unlockContent();
+                    passwordInput.value = '';
+                } else {
+                    // 密碼錯誤
+                    passwordError.classList.add('show');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    
+                    // 搖晃效果
+                    passwordInput.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => {
+                        passwordInput.style.animation = '';
+                    }, 500);
+                }
+            }
+
+            setAuthentication() {
+                const authData = {
+                    timestamp: Date.now(),
+                    authenticated: true,
+                    token: btoa(Math.random().toString()).substr(10, 10)
+                };
+                localStorage.setItem(this.sessionKey, JSON.stringify(authData));
+            }
+
+            isAuthenticated() {
+                const authData = localStorage.getItem(this.sessionKey);
+                if (!authData) return false;
+
+                try {
+                    const parsed = JSON.parse(authData);
+                    const now = Date.now();
+                    const elapsed = now - parsed.timestamp;
+
+                    // 檢查是否在有效期內
+                    if (elapsed < this.sessionDuration && parsed.authenticated) {
+                        return true;
+                    } else {
+                        // 超時，清除認證
+                        localStorage.removeItem(this.sessionKey);
+                        return false;
+                    }
+                } catch (e) {
+                    localStorage.removeItem(this.sessionKey);
+                    return false;
+                }
+            }
+
+            showPasswordOverlay() {
+                const overlay = document.getElementById('passwordOverlay');
+                const mainContent = document.getElementById('mainContent');
+                
+                overlay.style.display = 'flex';
+                mainContent.classList.remove('unlocked');
+                document.body.style.overflow = 'hidden';
+                
+                // 自動聚焦到密碼輸入框
+                setTimeout(() => {
+                    document.getElementById('passwordInput').focus();
+                }, 100);
+            }
+
+            unlockContent() {
+                const overlay = document.getElementById('passwordOverlay');
+                const mainContent = document.getElementById('mainContent');
+                
+                this.isUnlocked = true;
+                
+                overlay.classList.add('fade-out');
+                mainContent.classList.add('unlocked');
+                document.body.style.overflow = 'auto';
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
         }
 
-        // 頁面加載完成後執行
-        document.addEventListener('DOMContentLoaded', hideVimeoUserInfo);
+        // 初始化密碼保護
+        document.addEventListener('DOMContentLoaded', () => {
+            new SecurePasswordProtection();
+        });
+
+       
+
+        observer.observe(document.body, {
+            attributes: true,
+            subtree: true,
+            attributeFilter: ['style', 'class']
+        });
