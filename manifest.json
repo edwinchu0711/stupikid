@@ -1,11 +1,12 @@
 {
   "name": "Stupikid",
-  "short_name": "Stupikid",
+  "short_name": "Stupikid", 
   "description": "高齊反擊的號角",
-  "start_url": "/",
+  "start_url": "/stupikid/",
+  "scope": "/stupikid/",
   "display": "standalone",
   "background_color": "#0f0f0f",
-  "theme_color": #000000,
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "1534128869.ico",
