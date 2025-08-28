@@ -1,14 +1,4 @@
-// 自動更新版本號
-(function() {
-    const currentVersion = new Date().toISOString().slice(0,19).replace(/[-:]/g, '').replace('T', '');
-    console.log('當前版本:', currentVersion);
-    
-    // 如果需要強制刷新快取
-    if (performance.navigation.type === 1) {
-        // 頁面是通過刷新載入的
-        location.reload(true);
-    }
-})();
+
         
         
         
