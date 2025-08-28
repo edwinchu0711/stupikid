@@ -92,8 +92,12 @@
              { "id": 90, "title": "都是第二名的錯", "src": "https://player.vimeo.com/video/563038082?title=0&byline=0&portrait=0", "tags": ["競爭", "搞笑"] },
              { "id": 91, "title": "秉豪的物理實驗室", "src": "https://player.vimeo.com/video/563037330?title=0&byline=0&portrait=0", "tags": ["科學", "實驗"] },
              { "id": 92, "title": "秉豪的物理實驗室 IG版", "src": "https://player.vimeo.com/video/563037007?title=0&byline=0&portrait=0", "tags": ["科學", "實驗", "IG"] },
-             { "id": 93, "title": "端午佳節 闔家平安", "src": "https://player.vimeo.com/video/563037604?title=0&byline=0&portrait=0", "tags": ["節日", "端午"] }
-            ];
+             { "id": 93, "title": "端午佳節 闔家平安", "src": "https://player.vimeo.com/video/563037604?title=0&byline=0&portrait=0", "tags": ["節日", "端午"] },
+            { "id": 94, "title": "交女友教學", "src": "https://player.vimeo.com/video/1113840225?title=0&byline=0&portrait=0", "tags": ["做愛","女友"] },
+            { "id": 95, "title": "新年做愛", "src": "https://player.vimeo.com/video/1113840272?title=0&byline=0&portrait=0", "tags": ["做愛", "年糕","年獸"] },
+            { "id": 96, "title": "Sex", "src": "https://player.vimeo.com/video/1113840188?title=0&byline=0&portrait=0", "tags": ["老蟠", "做愛"] }
+        ];
+
 
         let currentVideos = videos;
         let recommendedVideos = [];
@@ -141,10 +145,13 @@
             noResults.classList.add('hidden');
             statsInfo.textContent = `顯示 ${currentVideos.length} 部影片`;
             
-            currentVideos.forEach(video => {
+            // 從最後一個開始往前輸出
+            for (let i = currentVideos.length - 1; i >= 0; i--) {
+                const video = currentVideos[i];
                 const videoCard = createVideoCard(video);
                 grid.appendChild(videoCard);
-            });
+            }
+
         }
 
         // 創建影片卡片
@@ -162,7 +169,6 @@
                     </div>
                 </div>
                 <div class="video-info">
-                    <div class="video-number">#${video.id}</div>
                     <div class="video-title">${video.title}</div>
                 </div>
             `;
