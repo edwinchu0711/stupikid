@@ -23,7 +23,7 @@ try {
     console.log('🔄 正在從 Firebase 載入影片資料...');
     
     const videosRef = collection(db, 'videos');
-    const q = query(videosRef, orderBy('id', 'asc'));
+    const q = query(videosRef, orderBy('createdAt', 'asc'));
     const querySnapshot = await getDocs(q);
     
     const videos = [];
@@ -173,7 +173,7 @@ function playVideo(video) {
               </button>
           </div>
           <div class="video-modal-body">
-              <iframe src="${video.src}&autoplay=1" 
+              <iframe src="${video.src}?autoplay=1" 
                       width="100%" 
                       height="100%" 
                       frameborder="0" 

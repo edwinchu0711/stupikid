@@ -756,3 +756,64 @@ img {
     user-drag: none;
     pointer-events: none; /* 完全禁用圖片互動 */
 }
+
+@media (max-width: 480px) {
+  .nav-container .admin-badge text{
+    display: none;
+  }
+  .video-url{
+    display: none;
+  }
+}
+
+/* 退出按鈕樣式 */
+.password-exit-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.password-exit-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.password-exit-btn i {
+    font-size: 12px;
+}
+
+/* 如果你想要更明顯的退出按鈕 */
+.password-exit-btn.danger {
+    background: rgba(220, 53, 69, 0.2);
+    border-color: rgba(220, 53, 69, 0.3);
+    color: #ff6b7a;
+}
+
+.password-exit-btn.danger:hover {
+    background: rgba(220, 53, 69, 0.3);
+    border-color: rgba(220, 53, 69, 0.5);
+}
+
+/* 按鈕容器排列 */
+.password-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.password-container .password-btn,
+.password-container .password-exit-btn {
+    width: 100%;
+    max-width: 280px;
+}

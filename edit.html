@@ -5,7 +5,7 @@
 <link href="SK.png" rel="shortcut icon" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Stupikid - 管理員模式</title>
-<link rel="stylesheet" href="edit-style.css?version=1.1">
+<link rel="stylesheet" href="edit-style.css?version=1.2">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link rel="manifest" href="/stupikid/manifest.json">
 <meta name="theme-color" content="#212121">
@@ -24,9 +24,13 @@
         <button class="password-btn" id="passwordBtn">
             <i class="fas fa-key"></i> 進入管理模式
         </button>
+        <button class="password-exit-btn" id="passwordExitBtn">
+            <i class="fas fa-times"></i> 退出
+        </button>
         <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
     </div>
 </div>
+
 
 <!-- 主要內容 -->
 <div class="main-content" id="mainContent">
@@ -37,7 +41,7 @@
             </a>
             <div class="admin-badge">
                 <i class="fas fa-crown"></i>
-                管理員模式
+                <text>管理員模式</text>
             </div>
             <button class="exit-btn" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> 登出
@@ -88,7 +92,7 @@
                 <div class="form-group">
                     <label for="videoTags" class="form-label">標籤 (用逗號分隔)</label>
                     <input type="text" id="videoTags" name="videoTags" class="form-input" 
-                           placeholder="例如：做愛,性愛,教學">
+                           placeholder="例如：搞笑,高齊,教學">
                 </div>
 
                 <button type="submit" class="btn-primary">
@@ -174,6 +178,6 @@
     </div>
 </div>
 
-<script type="module" src="edit-script.js?version=1.1"></script>
+<script type="module" src="edit-script.js?version=1.2"></script>
 </body>
 </html>
