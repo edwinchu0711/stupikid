@@ -19,3 +19,18 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+// 在 fetch 事件中添加
+self.addEventListener('fetch', event => {
+    // 跳過 JavaScript 文件的快取
+    if (event.request.url.includes('.js') || event.request.url.includes('firebase')) {
+        return; // 讓瀏覽器正常處理，不進行快取
+    }
+    
+    // 其他文件正常快取
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => response || fetch(event.request))
+    );
+});
+
