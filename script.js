@@ -177,8 +177,10 @@ function playVideo(video) {
                       width="100%" 
                       height="100%" 
                       frameborder="0" 
-                      allow="autoplay; fullscreen; picture-in-picture" 
-                      allowfullscreen>
+                      allowfullscreen
+                      webkitallowfullscreen
+                      mozallowfullscreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen">
               </iframe>
           </div>
       </div>
@@ -187,6 +189,7 @@ function playVideo(video) {
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
 }
+
 
 // 關閉影片模態框
 function closeVideoModal() {
