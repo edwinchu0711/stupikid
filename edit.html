@@ -11,15 +11,16 @@
 <meta name="theme-color" content="#212121">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 
 <body>
-<!-- 密碼保護遮罩 -->
-<div class="password-overlay" id="passwordOverlay" style="display: none;">
+<div class="password-overlay" id="passwordOverlay" style="display: flex;">
     <div class="password-container">
         <i class="fas fa-shield-alt lock-icon"></i>
         <h1 class="password-title">🔐 管理員驗證</h1>
-        <p class="password-subtitle">請輸入管理員密碼</p>
+        <p class="password-subtitle">請輸入管理員密碼解鎖資料庫</p>
         <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼" autocomplete="off">
         <button class="password-btn" id="passwordBtn">
             <i class="fas fa-key"></i> 進入管理模式
@@ -27,12 +28,10 @@
         <button class="password-exit-btn" id="passwordExitBtn">
             <i class="fas fa-times"></i> 退出
         </button>
-        <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
+        <div class="password-error" id="passwordError">密碼錯誤或無法解密，請重新輸入</div>
     </div>
 </div>
 
-
-<!-- 主要內容 -->
 <div class="main-content" id="mainContent">
     <header class="header">
         <div class="nav-container">
@@ -50,14 +49,12 @@
     </header>
 
     <main class="admin-container">
-        <!-- 新增影片區域 -->
         <section class="add-video-section">
             <div class="section-header">
                 <h2><i class="fas fa-plus-circle"></i> 新增影片</h2>
             </div>
             
             <form id="addVideoForm" class="video-form">
-                <!-- 影片來源選擇 -->
                 <div class="form-group">
                     <label class="form-label">影片來源</label>
                     <div class="radio-group">
@@ -74,21 +71,18 @@
                     </div>
                 </div>
 
-                <!-- 影片網址/ID -->
                 <div class="form-group">
                     <label for="videoUrl" class="form-label">Vimeo 影片 ID</label>
                     <input type="text" id="videoUrl" name="videoUrl" class="form-input" 
                            placeholder="例如：1113840188" required>
                 </div>
 
-                <!-- 影片標題 -->
                 <div class="form-group">
                     <label for="videoTitle" class="form-label">影片標題</label>
                     <input type="text" id="videoTitle" name="videoTitle" class="form-input" 
                            placeholder="輸入影片標題" required>
                 </div>
 
-                <!-- 標籤 -->
                 <div class="form-group">
                     <label for="videoTags" class="form-label">標籤 (用逗號分隔)</label>
                     <input type="text" id="videoTags" name="videoTags" class="form-input" 
@@ -101,7 +95,6 @@
             </form>
         </section>
 
-        <!-- 影片列表區域 -->
         <section class="video-list-section">
             <div class="section-header">
                 <h2><i class="fas fa-video"></i> 影片管理</h2>
@@ -111,13 +104,11 @@
             </div>
             
             <div id="videoList" class="video-list">
-                <!-- 影片列表將動態載入 -->
-            </div>
+                </div>
         </section>
     </main>
 </div>
 
-<!-- 編輯影片彈窗 -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -155,7 +146,6 @@
     </div>
 </div>
 
-<!-- 刪除確認彈窗 -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -178,6 +168,6 @@
     </div>
 </div>
 
-<script type="module" src="edit-script.js?version=1.2"></script>
+<script type="module" src="edit-script.js?version=3.0"></script>
 </body>
 </html>

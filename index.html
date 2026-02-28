@@ -11,6 +11,9 @@
     <meta name="theme-color" content="#212121">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
     <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/stupikid/service-worker.js')
@@ -18,37 +21,31 @@
         .catch(error => console.log('SW registration failed'));
     }
     </script>
-
-
 </head>
 
 <body>
-  <!-- 密碼保護遮罩 -->
-  <div class="password-overlay" id="passwordOverlay" style="display: none;">
+  <div class="password-overlay" id="passwordOverlay" style="display: flex;">
       <div class="password-container">
           <i class="fas fa-lock lock-icon"></i>
           <h1 class="password-title">🔒 內容受保護</h1>
-          <p class="password-subtitle">請輸入密碼 (提示:高齊生日)</p>
+          <p class="password-subtitle">請輸入密碼解鎖資料庫</p>
           <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼" autocomplete="off">
           <button class="password-btn" id="passwordBtn">
               <i class="fas fa-key"></i> 解鎖
           </button>
-          <div class="password-error" id="passwordError">密碼錯誤，請重新輸入</div>
+          <div class="password-error" id="passwordError">密碼錯誤或無法解密，請重新輸入</div>
       </div>
   </div>
 
-  <!-- 主要內容 - 初始隱藏 -->
   <div class="main-content" id="mainContent">
       <header class="header">
           <div class="nav-container">
               <a href="index.html" class="logo">
                   <i class="fas fa-play-circle"></i> Stupikid
               </a>
-              <!-- 🔧 修改：為搜尋框容器添加 search-container class -->
               <div class="search-box search-container">
                   <input type="text" class="search-input" placeholder="搜尋影片..." id="searchInput">
                   <i class="fas fa-search search-icon"></i>
-                  <!-- 管理員按鈕會由 JavaScript 動態插入到這裡 -->
               </div>
           </div>
       </header>
@@ -89,6 +86,6 @@
       </main>
   </div>
 
-  <script type="module" src="script.js?version=2.4"></script>    
+  <script type="module" src="script.js?version=4"></script>    
 </body>
 </html>
