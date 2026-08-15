@@ -160,7 +160,61 @@ import {
         return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTYwIDkwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjkwIiBmaWxsPSIjMzMzIi8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iNDUiIHI9IjIwIiBmaWxsPSIjNjY2Ii8+Cjxwb2x5Z29uIHBvaW50cz0iNzUsNDAgODUsNDUgNzUsNTAiIGZpbGw9IiNmZmYiLz4KPHN2Zz4K';
     }
 
+    // =========================================================================
+    // 🎨 主題與 PWA 狀態列色彩管理 (支援旋轉橫豎屏自適應修復)
+    // =========================================================================
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('stupikid_theme', theme);
+        const isDark = theme === 'dark';
+        const themeColor = isDark ? '#080c14' : '#ffffff';
+
+        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (!metaThemeColor) {
+            metaThemeColor = document.createElement('meta');
+            metaThemeColor.setAttribute('name', 'theme-color');
+            document.head.appendChild(metaThemeColor);
+        }
+        metaThemeColor.setAttribute('content', themeColor);
+
+        let metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (!metaStatusBar) {
+            metaStatusBar = document.createElement('meta');
+            metaStatusBar.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
+            document.head.appendChild(metaStatusBar);
+        }
+        metaStatusBar.setAttribute('content', isDark ? 'black-translucent' : 'default');
+    }
+
+    function syncTheme() {
+        const currentTheme = localStorage.getItem('stupikid_theme') || document.documentElement.getAttribute('data-theme') || 'light';
+        applyTheme(currentTheme);
+    }
+
+    function setupThemeSync() {
+        syncTheme();
+
+        // 監聽螢幕旋轉與視窗變化
+        window.addEventListener('orientationchange', () => {
+            setTimeout(syncTheme, 50);
+            setTimeout(syncTheme, 250);
+        });
+
+        if (window.screen && window.screen.orientation && window.screen.orientation.addEventListener) {
+            window.screen.orientation.addEventListener('change', () => {
+                setTimeout(syncTheme, 50);
+                setTimeout(syncTheme, 250);
+            });
+        }
+
+        window.addEventListener('resize', syncTheme);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') syncTheme();
+        });
+    }
+
     function setupThemeToggle() {
+        setupThemeSync();
         const toggleButtons = document.querySelectorAll('.theme-toggle-btn, #themeToggle');
         if (!toggleButtons || toggleButtons.length === 0) return;
 
@@ -173,13 +227,7 @@ import {
                 e.stopPropagation();
                 const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
                 const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', nextTheme);
-                localStorage.setItem('stupikid_theme', nextTheme);
-
-                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                if (metaThemeColor) {
-                    metaThemeColor.setAttribute('content', nextTheme === 'dark' ? '#090e17' : '#ffffff');
-                }
+                applyTheme(nextTheme);
             });
         });
     }

@@ -17,6 +17,13 @@
     (function() {
       const savedTheme = localStorage.getItem('stupikid_theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
+      const isDark = savedTheme === 'dark';
+      const themeColor = isDark ? '#080c14' : '#ffffff';
+      
+      let metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', themeColor);
+      let metaStatus = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+      if (metaStatus) metaStatus.setAttribute('content', isDark ? 'black-translucent' : 'default');
     })();
   </script>
 
@@ -29,7 +36,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- 管理員樣式表 -->
-  <link rel="stylesheet" href="assets/css/edit-style.css?version=4.0">
+  <link rel="stylesheet" href="assets/css/edit-style.css?version=4.1">
   
   <!-- PWA Manifest & Meta -->
   <link rel="manifest" href="manifest.json">
@@ -267,6 +274,6 @@
   </div>
 
   <!-- 後台管理邏輯腳本 -->
-  <script type="module" src="assets/js/edit-script.js?version=4.0"></script>
+  <script type="module" src="assets/js/edit-script.js?version=4.1"></script>
 </body>
 </html>

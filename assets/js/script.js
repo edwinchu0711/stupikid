@@ -172,6 +172,17 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
         }
     }
 
+    // 分頁與無限滾動狀態
+    let displayVideosList = [];
+    let displayedCount = 0;
+    let isLoadingMore = false;
+    let infiniteScrollObserver = null;
+
+    // 依螢幕寬度取得單批加載數量 (手機 15 部，電腦/平板 30 部)
+    function getBatchSize() {
+        return window.innerWidth <= 768 ? 15 : 30;
+    }
+
     // 產生推薦影片
     function generateRecommendedVideos() {
         if (videos.length === 0) return;
@@ -195,25 +206,97 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
         });
     }
 
-    function renderAllVideos() {
+    // 渲染所有影片 (支援分批與無限加載)
+    function renderAllVideos(reset = true) {
         const grid = document.getElementById('videoGrid');
         const noResults = document.getElementById('noResults');
         const statsInfo = document.getElementById('statsInfo');
+        const statusContainer = document.getElementById('infiniteScrollStatus');
         if (!grid || !noResults || !statsInfo) return;
 
-        grid.innerHTML = '';
+        if (reset) {
+            grid.innerHTML = '';
+            displayedCount = 0;
+            // 倒序排列（最新發佈在前）
+            displayVideosList = [...currentVideos].reverse();
+        }
 
-        if (currentVideos.length === 0) {
+        if (displayVideosList.length === 0) {
             noResults.classList.remove('hidden');
             statsInfo.textContent = '找不到相關影片';
+            if (statusContainer) {
+                statusContainer.innerHTML = '';
+                statusContainer.className = 'infinite-scroll-status';
+            }
+            if (infiniteScrollObserver) infiniteScrollObserver.disconnect();
             return;
         }
 
         noResults.classList.add('hidden');
-        statsInfo.textContent = `顯示 ${currentVideos.length} 部影片`;
+        loadNextBatch();
+        setupInfiniteScrollObserver();
+    }
 
-        for (let i = currentVideos.length - 1; i >= 0; i--) {
-            grid.appendChild(createVideoCard(currentVideos[i]));
+    // 載入下一批影片卡片
+    function loadNextBatch() {
+        if (isLoadingMore || displayedCount >= displayVideosList.length) return;
+        isLoadingMore = true;
+
+        const grid = document.getElementById('videoGrid');
+        const statsInfo = document.getElementById('statsInfo');
+        const statusContainer = document.getElementById('infiniteScrollStatus');
+        if (!grid || !statsInfo) {
+            isLoadingMore = false;
+            return;
+        }
+
+        const batchSize = getBatchSize();
+        const nextVideos = displayVideosList.slice(displayedCount, displayedCount + batchSize);
+
+        const fragment = document.createDocumentFragment();
+        nextVideos.forEach(video => {
+            fragment.appendChild(createVideoCard(video));
+        });
+        grid.appendChild(fragment);
+
+        displayedCount += nextVideos.length;
+        statsInfo.textContent = `顯示 ${displayedCount} / ${displayVideosList.length} 部影片`;
+
+        if (statusContainer) {
+            if (displayedCount >= displayVideosList.length) {
+                statusContainer.className = 'infinite-scroll-status end';
+                statusContainer.innerHTML = `<span>已載入全部 ${displayVideosList.length} 部影片</span>`;
+            } else {
+                statusContainer.className = 'infinite-scroll-status';
+                statusContainer.innerHTML = '';
+            }
+        }
+
+        isLoadingMore = false;
+    }
+
+    // 設定 IntersectionObserver 滾動到底部哨兵自動加載
+    function setupInfiniteScrollObserver() {
+        const sentinel = document.getElementById('infiniteScrollSentinel');
+        if (!sentinel) return;
+
+        if (infiniteScrollObserver) {
+            infiniteScrollObserver.disconnect();
+        }
+
+        if ('IntersectionObserver' in window) {
+            infiniteScrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && isShowingAll && displayedCount < displayVideosList.length && !isLoadingMore) {
+                        loadNextBatch();
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '350px 0px',
+                threshold: 0.01
+            });
+            infiniteScrollObserver.observe(sentinel);
         }
     }
 
@@ -300,15 +383,18 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
                 currentVideos = videos;
                 document.getElementById('recommendedSection')?.classList.add('hidden');
                 document.getElementById('allVideosSection')?.classList.remove('hidden');
+                const title = document.getElementById('allVideoTitle');
+                if (title) title.innerHTML = '所有影片';
                 const searchInput = document.getElementById('searchInput');
                 if (searchInput) searchInput.value = '';
-                renderAllVideos();
+                renderAllVideos(true);
             });
         }
 
         if (backBtn) {
             backBtn.addEventListener('click', () => {
                 isShowingAll = false;
+                if (infiniteScrollObserver) infiniteScrollObserver.disconnect();
                 document.getElementById('allVideosSection')?.classList.add('hidden');
                 document.getElementById('recommendedSection')?.classList.remove('hidden');
                 document.getElementById('noResults')?.classList.add('hidden');
@@ -318,6 +404,16 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
                 generateRecommendedVideos();
             });
         }
+
+        // 監聽一般滾動作為備用觸發
+        window.addEventListener('scroll', () => {
+            if (!isShowingAll || isLoadingMore || displayedCount >= displayVideosList.length) return;
+            const scrollBottom = window.innerHeight + window.scrollY;
+            const docHeight = document.documentElement.scrollHeight;
+            if (docHeight - scrollBottom < 400) {
+                loadNextBatch();
+            }
+        }, { passive: true });
     }
 
     async function setupAdminMode() {
@@ -374,7 +470,7 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
                 currentVideos = videos;
                 const title = document.getElementById('allVideoTitle');
                 if (title) title.innerHTML = '所有影片';
-                renderAllVideos();
+                renderAllVideos(true);
             }
             return;
         }
@@ -392,10 +488,64 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
 
         const title = document.getElementById('allVideoTitle');
         if (title) title.innerHTML = `搜尋結果：${query} (${currentVideos.length}部)`;
-        renderAllVideos();
+        renderAllVideos(true);
+    }
+
+    // =========================================================================
+    // 🎨 主題與 PWA 狀態列色彩管理 (支援旋轉橫豎屏自適應修復)
+    // =========================================================================
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('stupikid_theme', theme);
+        const isDark = theme === 'dark';
+        const themeColor = isDark ? '#080c14' : '#ffffff';
+
+        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (!metaThemeColor) {
+            metaThemeColor = document.createElement('meta');
+            metaThemeColor.setAttribute('name', 'theme-color');
+            document.head.appendChild(metaThemeColor);
+        }
+        metaThemeColor.setAttribute('content', themeColor);
+
+        let metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (!metaStatusBar) {
+            metaStatusBar = document.createElement('meta');
+            metaStatusBar.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
+            document.head.appendChild(metaStatusBar);
+        }
+        metaStatusBar.setAttribute('content', isDark ? 'black-translucent' : 'default');
+    }
+
+    function syncTheme() {
+        const currentTheme = localStorage.getItem('stupikid_theme') || document.documentElement.getAttribute('data-theme') || 'light';
+        applyTheme(currentTheme);
+    }
+
+    function setupThemeSync() {
+        syncTheme();
+
+        // 監聽螢幕旋轉與視窗變化，確保 PWA 橫直向切換時狀態列顏色不走樣
+        window.addEventListener('orientationchange', () => {
+            setTimeout(syncTheme, 50);
+            setTimeout(syncTheme, 250);
+        });
+
+        if (window.screen && window.screen.orientation && window.screen.orientation.addEventListener) {
+            window.screen.orientation.addEventListener('change', () => {
+                setTimeout(syncTheme, 50);
+                setTimeout(syncTheme, 250);
+            });
+        }
+
+        window.addEventListener('resize', syncTheme);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') syncTheme();
+        });
     }
 
     function setupThemeToggle() {
+        setupThemeSync();
         const toggleButtons = document.querySelectorAll('.theme-toggle-btn, #themeToggle');
         if (!toggleButtons || toggleButtons.length === 0) return;
 
@@ -408,13 +558,7 @@ import { getFirestore, collection, getDocs, query, orderBy } from "https://www.g
                 e.stopPropagation();
                 const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
                 const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', nextTheme);
-                localStorage.setItem('stupikid_theme', nextTheme);
-
-                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                if (metaThemeColor) {
-                    metaThemeColor.setAttribute('content', nextTheme === 'dark' ? '#090e17' : '#ffffff');
-                }
+                applyTheme(nextTheme);
             });
         });
     }

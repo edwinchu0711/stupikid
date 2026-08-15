@@ -37,6 +37,4 @@ stupikid/
 │   └── images/
 │       ├── favicon.ico          # 網站圖示備份
 │       └── SK.png               # App Icon / Logo
-└── data/
-    └── messages.json            # 資料設定檔
 ```

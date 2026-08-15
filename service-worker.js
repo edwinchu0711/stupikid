@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stupikid-v5';
+const CACHE_NAME = 'stupikid-v6';
 const URLS_TO_CACHE = [
   './',
   './index.html',
